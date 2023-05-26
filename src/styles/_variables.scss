@@ -1,0 +1,125 @@
+//  Colors for a Light Theme
+$c100: #0A2540;
+$c101: #27DEC5;
+$c102: #FFDE0F;
+$c103: #EBFBFF;
+$default: #fff;
+
+
+
+// TextBlock Style
+%card-title {
+  font-size: 30px;
+  line-height: 39px;
+  color: $c100;
+  font-weight: 600;
+  margin-bottom: 9px;
+}
+
+%card-list {
+  p {
+    font-size: 17px;
+    line-height: 27px;
+    margin-left: 25px;
+    font-weight: 400;
+  }
+
+  span {
+    color: $c100;
+    font-weight: 600;
+  }
+}
+
+%card-list-after {
+  position: absolute;
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 100%;
+  background: #000;
+  display: block;
+  top: 45%;
+  bottom: 0;
+  align-items: center;
+}
+
+//  Fonts
+
+$font: 'Inter', sans-serif;
+
+//  Weights
+$font-l: 300;
+$font-m: 500;
+$font-sb: 600;
+$font-b: 700;
+$font-bl: 900;
+
+//
+//  Breakpoints
+//  ---------------------------------------------
+
+$mobile-320: 320px;
+$mobile__xx-small: 375px;
+$mobile-480: 480px;
+$mobile-600: 600px;
+$mobile__small: 640px;
+$mobile-768: 768px;
+$tablet__small: 848px;
+$tablet__basic: 1025px;
+$desktop__small: 1140px;
+$container-1320: 1320px;
+$desktop__basic: 1440px;
+
+
+// Hover
+%dtrans {
+  transition: all 0.5s ease;
+}
+
+%htrans {
+  transition: all 0.3s ease;
+}
+
+// Btn
+%btn {
+  background-color: $c101;
+  border-radius: 4px;
+  box-shadow: 0px 4px 4px rgba(238, 28, 37, 0.2);
+  width: 185px;
+  height: 48px;
+  color: $default;
+}
+
+%global-btn {
+  background: $c101;
+  color: $default;
+  border: none;
+  font-size: 18px;
+  line-height: 22px;
+  font-weight: 600;
+  padding: 14px 36px;
+  border-radius: 15px;
+  @extend %dtrans;
+
+  &:hover {
+    background: $c100;
+    @extend %htrans;
+  }
+}
+//effect
+%border-ef {
+  box-shadow: 0px 5px 35px rgba(225, 242, 255, 0.9);
+}
+%form-ef{
+  box-shadow: 0px 2px 20px rgba(32, 25, 24, 0.1);
+}
+
+%btn-ef{
+  box-shadow: 0px 2px 10px rgba(48, 36, 35, 0.2);
+}
+
+%mask-effect{
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.45) 18.95%, rgba(0, 0, 0, 0) 50.11%);
+  border-radius: 20px;
+  transform: rotate(-180deg);
+}

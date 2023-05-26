@@ -1,0 +1,127 @@
+@use "variables" as var;
+
+html,
+body {
+  height: 100%;
+  list-style: none;
+  scroll-behavior: smooth;
+}
+a {
+  text-decoration: none;
+  color: var.$c100;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+body {
+  font-family: var.$font;
+  color: var.$c100;
+  background: var.$default;
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: $font-l;
+}
+
+/* custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var.$default;
+  border-radius: 20px;
+  border: 4px solid transparent;
+  background-clip: content-box;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+input,
+textarea {
+  font-size: 16px;
+  line-height: 21px;
+  color: #465e77;
+  background: var.$c100;
+  border: 1px solid var.$c100;
+  border-radius: 8px;
+  background-clip: padding-box;
+  padding: 10px 15px;
+  vertical-align: baseline;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+textarea {
+  max-height: 250px;
+  min-height: 150px;
+}
+
+h1 {
+  font-weight: normal;
+  font-size: 62px;
+  line-height: 81px;
+}
+
+h2 {
+  font-weight: normal;
+  font-size: 32px;
+  line-height: 42px;
+}
+
+.text,
+p {
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 24px;
+}
+
+
+.container-1320 {
+  width: var.$container-1320;
+  padding: 0 15px;
+  margin: 0 auto;
+  transition: max-width 0.5s ease-in-out, padding 0.5s ease-in-out;
+}
+
+@media (max-width: 1300px) {
+  .container-1320  {
+    max-width: 1000px;
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container-1320  {
+    max-width: 700px;
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  .container-1320 {
+    max-width: 100%;
+    padding: 0 5px;
+  }
+}
+@media (max-width: 480px) {
+  .container-1320  {
+    max-width: 100%;
+    padding: 0 5px;
+  }
+}
+@media (max-width: 320px) {
+  .container-1320 {
+    max-width: 290px;
+    padding: 0 5px;
+  }
+}
