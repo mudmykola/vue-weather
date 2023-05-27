@@ -9,7 +9,7 @@ import HeaderAsideContent from "@/components/UI/HeaderAsideContent.vue";
 
 export default {
   name: "HeaderAside",
-  components: {HeaderAsideContent},
+  components: { HeaderAsideContent},
   props: {
     logoIcon: {
       type: String,

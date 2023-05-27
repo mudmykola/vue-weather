@@ -10,12 +10,17 @@
           logo
         }}</h2>
     </div>
+    <Navigation/>
   </div>
 </template>
 
 <script>
+import Navigation from "@/components/UI/Navigation.vue";
 export default {
   name: "HeaderAsideContent",
+  components: {
+    Navigation,
+  },
   props: {
     logoIcon: {
       type: String,

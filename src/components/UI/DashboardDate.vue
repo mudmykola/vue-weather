@@ -68,6 +68,8 @@ export default {
     h2,p,span{
       font-size: 14px;
       line-height: 20px;
+      color: var.$c101;
+      font-weight: var.$font-m;
     }
 
 

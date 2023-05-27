@@ -1,0 +1,89 @@
+<template>
+  <div class="navigation">
+    <div class="navigation-menu">
+      <ul>
+        <li v-for="(menuItem, index) in menuItems" :key="index">
+          <div class="menu-item" v-if="menuItem">
+            <svg-icon
+                type="mdi"
+                :path="menuItem.path"></svg-icon>
+            <a :to="menuItem.url" :class="{ active: menuItem.active }">
+              {{ menuItem.title }}
+            </a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
+<script>
+import SvgIcon from '@jamescoyle/vue-icon';
+import { mdiHomeOutline } from '@mdi/js';
+import { mdiHeartOutline } from '@mdi/js';
+export default {
+  components: {
+    SvgIcon
+  },
+  data() {
+    return {
+      menuItems: [
+        {
+          title: 'Головна',
+
+          path: mdiHomeOutline,
+          active: false,
+        },
+        {
+          title: 'Улюблене',
+          url: '/',
+          path: mdiHeartOutline,
+          active: false,
+        }
+      ],
+      mounted() {
+        const currentURL = window.location.pathname;
+        this.menuItems.forEach(menuItem => {
+          if (menuItem.url === currentURL) {
+            menuItem.active = true;
+          }
+        });
+      },
+    };
+
+  },
+
+};
+</script>
+<style lang="scss" scoped>
+@use "src/styles/variables" as var;
+.navigation {
+  margin-top: 60px;
+
+&-menu{
+  li+li{
+    padding-top: 20px;
+  }
+}
+}
+.menu {
+ &-item{
+   display: flex;
+   align-items: center;
+   color: var.$c102;
+   a{
+     font-size: 18px;
+     line-height: 30px;
+     font-weight: var.$font-m;
+     margin-left: 10px;
+     color: var.$c102;
+     cursor: pointer;
+
+   }
+   a.active{
+     font-weight: var.$font-b;
+     columns: var.$c106;
+
+   }
+ }
+}
+</style>
