@@ -17,7 +17,7 @@ a {
 
 body {
   font-family: var.$font;
-  color: var.$c100;
+  color: var.$c101;
   background: var.$default;
   font-size: 16px;
   line-height: 20px;
@@ -84,10 +84,15 @@ p {
   font-size: 18px;
   line-height: 24px;
 }
+.container-848 {
+  width: var.$container-848;
+  padding: 0 15px;
+  margin: 0 auto;
+  transition: max-width 0.5s ease-in-out, padding 0.5s ease-in-out;
+}
 
-
-.container-1320 {
-  width: var.$container-1320;
+.container-1200 {
+  width: var.$container-1200;
   padding: 0 15px;
   margin: 0 auto;
   transition: max-width 0.5s ease-in-out, padding 0.5s ease-in-out;

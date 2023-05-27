@@ -8,6 +8,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@jamescoyle/vue-icon": "^0.1.2",
+    "@mdi/js": "^7.2.96",
+    "axios": "^1.4.0",
+    "lodash": "^4.17.21",
+    "lodash.debounce": "^4.0.8",
     "pinia": "^2.0.36",
     "sass": "^1.62.1",
     "vue": "^3.3.2",
@@ -15,6 +20,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",
+    "dotenv": "^16.0.3",
     "vite": "^4.3.5"
   }
 }

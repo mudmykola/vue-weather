@@ -1,8 +1,10 @@
 //  Colors for a Light Theme
-$c100: #0A2540;
-$c101: #27DEC5;
-$c102: #FFDE0F;
-$c103: #EBFBFF;
+$c100: #EEF2F3;
+$c101: #A3A2A7;
+$c102: #2E5FD9;
+$c103: #0A223E;
+$c104: #FCFBFC;
+$c106: #283f5c;
 $default: #fff;
 
 
@@ -58,16 +60,8 @@ $font-bl: 900;
 //  Breakpoints
 //  ---------------------------------------------
 
-$mobile-320: 320px;
-$mobile__xx-small: 375px;
-$mobile-480: 480px;
-$mobile-600: 600px;
-$mobile__small: 640px;
-$mobile-768: 768px;
-$tablet__small: 848px;
-$tablet__basic: 1025px;
-$desktop__small: 1140px;
-$container-1320: 1320px;
+$container-848:848px;
+$container-1200: 1200px;
 $desktop__basic: 1440px;
 
 
