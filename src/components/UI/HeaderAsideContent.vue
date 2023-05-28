@@ -1,6 +1,6 @@
 <template>
   <div class="header-aside__content">
-    <div class="header-aside__content--logo">
+    <div class="header-aside__content--logo" @click="navigateToHome">
       <h1>
         {{
           logoIcon
@@ -16,6 +16,7 @@
 
 <script>
 import Navigation from "@/components/UI/Navigation.vue";
+
 export default {
   name: "HeaderAsideContent",
   components: {
@@ -29,11 +30,21 @@ export default {
     logo: {
       type: String,
       required: true,
-      url: '/',
-    }
+
+    },
+    url: {
+      type: String,
+      required: true,
+      default: '/'
+    },
 
 
-  }
+  },
+  methods: {
+    navigateToHome() {
+      window.location.href = this.url;
+    },
+  },
 }
 </script>
 
@@ -45,11 +56,13 @@ export default {
   color: var.$c101;
   width: 350px;
   height: 100vh;
+
   background: var.$c100;
 
   &--logo {
     display: flex;
-align-items: center;
+    align-items: center;
+
     h1 {
       font-size: 30px;
       color: var.$default;

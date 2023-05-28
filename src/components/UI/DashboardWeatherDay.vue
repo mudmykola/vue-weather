@@ -1,18 +1,35 @@
 <template>
   <div class="dashboard-weather__day">
-     <div v-if="isLoading" class="dashboard-weather__loader">
-    <svg-icon class="dashboard-weather__icons spinner" type="mdi" :path="path"></svg-icon>
-  </div>
-    <div v-else-if="error" class="dashboard-weather__day--error">{{ error }}</div>
+    <div v-if="isLoading" class="dashboard-weather__loader">
+      <svg-icon class="dashboard-weather__icons spinner" type="mdi" :path="path"></svg-icon>
+    </div>
+    <div v-else-if="error" class="dashboard-weather__day--error">{{
+        error
+      }}
+    </div>
     <div v-else class="dashboard-weather__day--info">
       <div class="dashboard-weather__day--icon">
-        <img :src="getWeatherIconUrl(weather.icon)" :alt="weather.description" />
+        <img :src="getWeatherIconUrl(weather.icon)" :alt="weather.description"/>
       </div>
       <div class="dashboard-weather__day--details">
-        <h2>{{ location }}</h2>
-        <p>{{ temperatureLabel }}: {{ roundTemperature(weather.temperature) }}°C</p>
-        <p>{{ humidityLabel }}: {{ weather.humidity }}%</p>
-        <p>{{ precipitationLabel }}: {{ weather.precipitation }}</p>
+        <h2>{{
+            location
+          }}</h2>
+        <p>{{
+            temperatureLabel
+          }}: {{
+            roundTemperature(weather.temperature)
+          }}°C</p>
+        <p>{{
+            humidityLabel
+          }}: {{
+            weather.humidity
+          }}%</p>
+        <p>{{
+            precipitationLabel
+          }}: {{
+            weather.precipitation
+          }}</p>
       </div>
     </div>
   </div>
@@ -20,17 +37,18 @@
 
 <script>
 import axios from 'axios';
-import { mdiReload } from '@mdi/js';
+import {mdiReload} from '@mdi/js';
 import SvgIcon from '@jamescoyle/vue-icon';
+
 export default {
   name: 'DashboardWeatherDay',
   components: {
     SvgIcon
   },
   props: {
-    temperatureLabel: { type: String, default: 'Температура' },
-    humidityLabel: { type: String, default: 'Вологість' },
-    precipitationLabel: { type: String, default: 'Опади' },
+    temperatureLabel: {type: String, default: 'Температура'},
+    humidityLabel: {type: String, default: 'Вологість'},
+    precipitationLabel: {type: String, default: 'Опади'},
   },
   data() {
     return {
@@ -58,7 +76,7 @@ export default {
     async getWeatherData() {
       try {
         const apiKey = '4904ff7c9fa86ba4a1bcf9b9e92cc3f3';
-        const { coords } = await this.getCurrentPosition();
+        const {coords} = await this.getCurrentPosition();
         const response = await axios.get(
             `https://api.openweathermap.org/data/2.5/weather?lat=${coords.latitude}&lon=${coords.longitude}&appid=${apiKey}&units=metric&lang=ua`
         );
@@ -92,7 +110,8 @@ export default {
 
 <style lang="scss">
 @use "src/styles/variables" as var;
-.dashboard-weather{
+
+.dashboard-weather {
   &__loader {
     display: flex;
     justify-content: center;
@@ -101,17 +120,17 @@ export default {
   }
 
   &__icons {
-    color: var.$c102;
+    color: var.$default;
   }
 }
+
 .dashboard-weather__day {
 
   margin-top: 30px;
-  background: var.$default;
+  background: var.$c103;
   border-radius: 8px;
   text-align: center;
   padding: 20px;
-
 
 
   &--error {
@@ -124,7 +143,7 @@ export default {
     h2 {
       font-size: 25px;
       line-height: 30px;
-      color: var.$c103;
+      color: var.$c104;
       font-weight: var.$font-b;
     }
 
@@ -135,9 +154,11 @@ export default {
     }
   }
 }
+
 .spinner {
   animation: spin 1s linear infinite;
 }
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);
