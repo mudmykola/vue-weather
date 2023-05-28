@@ -6,9 +6,9 @@
           logoIcon
         }}
       </h1>
-      <h2>{{
+      <a :href="url">{{
           logo
-        }}</h2>
+        }}</a>
     </div>
     <Navigation/>
   </div>
@@ -29,6 +29,7 @@ export default {
     logo: {
       type: String,
       required: true,
+      url: '/',
     }
 
 
@@ -63,12 +64,13 @@ align-items: center;
       height: 50px;
     }
 
-    h2 {
+    a {
       color: var.$c102;
       font-weight: var.$font-b;
       font-size: 25px;
       line-height: 30px;
       margin-left: 10px;
+      cursor: pointer;
     }
   }
 

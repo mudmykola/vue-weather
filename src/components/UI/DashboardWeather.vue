@@ -1,25 +1,34 @@
 <template>
-  <div>
-    <div class="dashboard-weather__buttons">
-      <button @click="fetchCurrentWeather">{{
-          weatherForDay
-        }}</button>
-      <button @click="fetchFiveDayWeather">Погода на 5 днів</button>
+  <div class="dashboard-weather">
+    <button class="dashboard-weather__btn" @click="addWeatherBlock">{{
+        addWeatherText
+      }}
+    </button>
+
+    <div v-for="(weather, index) in weatherBlocks" :key="index" class="dashboard-weather__card">
+      <h3>{{
+          weather.city
+        }}</h3>
+      <p>Температура: {{
+          Math.round(weather.temperature)
+        }} °C</p>
+      <p>{{
+          weather.description
+        }}</p>
+      <p v-if="isMorning(weather.time)">Температура вранці: {{
+          Math.round(weather.temperatureMorning)
+        }} °C</p>
+      <p v-else>Температура в обід: {{
+          Math.round(weather.temperatureDay)
+        }} °C</p>
+      <img :src="weather.icon" :alt="weather.description"/>
+      <button @click="deleteWeatherBlock(index)">Видалити</button>
     </div>
 
-    <div class="dashboard-weather__cards">
-      <div v-for="cityWeather in weatherData" :key="cityWeather.id" class="dashboard-weather__cards--box">
-        <h3>{{ cityWeather.name }}</h3>
-        <div class="dashboard-weather__cards--info">
-          <div>
-            <p>{{ windLabel }}: {{ cityWeather.wind.speed }} м/с</p>
-            <p>{{ descriptionLabel }}: {{ cityWeather.weather[0].description }}</p>
-          </div>
-          <img :src="getWeatherIconUrl(cityWeather.weather[0].icon)" :alt="getWeatherDescription(cityWeather.weather[0].id)" />
-        </div>
-        <p>{{ updatedLabel }}: {{ formatTimestamp(cityWeather.dt) }}</p>
-        <button @click="addToFavorites(cityWeather)">Додати в улюблене</button>
-      </div>
+    <div v-if="showDeletePopup" class="dashboard-weather__delete">
+      <p>Ви впевнені, що хочете видалити блок погоди?</p>
+      <button @click="confirmDelete">Так</button>
+      <button @click="cancelDelete">Скасувати</button>
     </div>
   </div>
 </template>
@@ -28,141 +37,116 @@
 import axios from 'axios';
 
 export default {
-  name: 'DashboardWeather',
+  name: 'WeatherCardList',
   props: {
-    windLabel: {
+    addWeatherText: {
       type: String,
-      default: 'Вітер',
-    },
-    descriptionLabel: {
-      type: String,
-      default: 'Опис',
-    },
-    updatedLabel: {
-      type: String,
-      default: 'Оновлено',
-    },
-    weatherForDay: {
-      type: String,
-      default: 'Погода на сьогодні',
+      default: 'Додати блок погоди',
     },
   },
   data() {
     return {
-      weatherData: [],
-      favoriteWeather: [],
+      weatherBlocks: [],
+      showDeletePopup: false,
+      deleteIndex: null,
+      apiKey: '4904ff7c9fa86ba4a1bcf9b9e92cc3f3',
     };
   },
   methods: {
-    async fetchCurrentWeather() {
-      try {
-        const apiKey = '4904ff7c9fa86ba4a1bcf9b9e92cc3f3';
-        const position = await this.getCurrentPosition();
-        const { latitude, longitude } = position.coords;
-        const response = await axios.get(
-            `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric&lang=ua`
-        );
-        this.weatherData = [response.data];
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    async fetchFiveDayWeather() {
-      try {
-        const apiKey = '4904ff7c9fa86ba4a1bcf9b9e92cc3f3';
-        const position = await this.getCurrentPosition();
-        const { latitude, longitude } = position.coords;
-        const response = await axios.get(
-            `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric&lang=ua`
-        );
-        this.weatherData = response.data.list.slice(0, 6);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    addToFavorites(cityWeather) {
-      this.favoriteWeather.push(cityWeather);
-    },
-    getCurrentPosition() {
-      return new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject);
-      });
-    },
-    formatTimestamp(timestamp) {
-      const date = new Date(timestamp * 1000);
-      const hours = date.getHours();
-      const minutes = date.getMinutes();
-      const seconds = date.getSeconds();
-      return `${hours}:${minutes}:${seconds}`;
-    },
-    getWeatherDescription(weatherId) {
-      const descriptions = {
-        200: 'Гроза з невеликим дощем',
-        201: 'Гроза з дощем',
-        202: 'Гроза з сильним дощем',
-      };
+    async addWeatherBlock() {
+      const city = prompt('Введіть назву міста:');
+      if (!city) return;
 
-      return descriptions[weatherId] || 'Невідома погода';
+      try {
+        const response = await axios.get(
+            `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${this.apiKey}&units=metric&lang=ua`
+        );
+        const weatherData = response.data;
+        const forecastResponse = await axios.get(
+            `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${this.apiKey}&units=metric&lang=ua`
+        );
+        const forecastData = forecastResponse.data;
+
+        const temperatureDay = forecastData.list[2].main.temp;
+        const temperatureEvening = forecastData.list[4].main.temp;
+
+        const newWeatherBlock = {
+          city: weatherData.name,
+          temperature: Math.round(weatherData.main.temp),
+          description: weatherData.weather[0].description,
+          temperatureMorning: 0,
+          temperatureDay: Math.round(temperatureDay),
+          temperatureEvening: Math.round(temperatureEvening),
+          time: new Date().getHours(),
+          icon: `https://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`,
+        };
+        this.weatherBlocks.push(newWeatherBlock);
+      } catch (error) {
+        console.log(error);
+      }
     },
-    getWeatherIconUrl(iconCode) {
-      return `https://openweathermap.org/img/wn/${iconCode}.png`;
+    deleteWeatherBlock(index) {
+      this.showDeletePopup = true;
+      this.deleteIndex = index;
+    },
+    confirmDelete() {
+      this.weatherBlocks.splice(this.deleteIndex, 1);
+      this.closeDeletePopup();
+    },
+    cancelDelete() {
+      this.closeDeletePopup();
+    },
+    closeDeletePopup() {
+      this.showDeletePopup = false;
+      this.deleteIndex = null;
+    },
+    isMorning(time) {
+      return time >= 6 && time < 12;
     },
   },
 };
 </script>
 
-
-
-
-
-
-
-
-<style lang="scss" scoped>
+<style lang="scss">
 @use "src/styles/variables" as var;
-.dashboard-weather__cards{
-  width: 90%;
-  justify-content: center;
-  margin: 0 auto;
+.dashboard-weather {
+  position: relative;
   padding-top: 50px;
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 10px;
-  &--info{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  &--box{
-    padding: 15px;
-    background: var.$default;
-    @extend %border-ef;
-    @extend %dtrans;
-    border-radius: 18px;
-    cursor: pointer;
-    button{
-      margin-top: 10px;
-      border: none;
-      background: var.$c102;
-      color: var.$default;
-      font-weight: var.$font-l;
-      padding: 5px;
-      border-radius: 5px;
-    }
-    p{
-      font-size: 14px;
-      line-height: 20px;
-      color: var.$c101;
-      font-weight: var.$font-l;
-    }
-    h3{
-      font-weight: var.$font-b;
-      color: var.$c103;
-    }
-    &:hover{
-      @extend %htrans;
-      @extend %form-ef;
-    }
+
+&__btn{
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  background: var.$c102;
+  color: var.$default;
+  font-weight: var.$font-b;
+  @extend %dtrans;
+  &:hover{
+    background: var.$c103;
+    @extend %htrans;
   }
 }
+  &__card {
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f2f2f2;
+    border-radius: 5px;
+  }
+
+  &__delete {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+}
+
+
 </style>

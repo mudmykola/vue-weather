@@ -18,82 +18,75 @@ export default {
   components: {
     SvgIcon
   },
-  setup() {
-    const chartCanvas = ref(null);
-    const temperatureData = ref([]);
-    const city = ref('');
-
-    const isLoading = ref(true);
-    const path = mdiReload;
-    const fetchTemperatureData = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            position => {
-              const { latitude, longitude } = position.coords;
-              const apiKey = "4904ff7c9fa86ba4a1bcf9b9e92cc3f3";
-              const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}`;
-
-              fetch(apiUrl)
-                  .then(response => response.json())
-                  .then(data => {
-                    temperatureData.value = extractTemperatureData(data);
-                    city.value = data.city.name;
-                    createChart();
-                  })
-                  .catch(error => {
-                    console.error('Error fetching temperature data:', error);
-                  });
-            },
-            error => {
-              console.error('Error getting geolocation:', error);
-            }
-        );
-      } else {
-        console.error('Geolocation is not supported by this browser.');
-      }
+  data() {
+    return {
+      chartCanvas: null,
+      temperatureData: [],
+      city: '',
+      isLoading: true,
+      path: mdiReload,
     };
+  },
+  mounted() {
+    this.fetchTemperatureData();
+  },
+  methods: {
+    async fetchTemperatureData() {
+      try {
+        const position = await this.getCurrentPosition();
+        const { latitude, longitude } = position.coords;
+        const apiKey = "4904ff7c9fa86ba4a1bcf9b9e92cc3f3";
+        const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}`;
 
-    const extractTemperatureData = data => {
-      const currentDate = new Date().getDate();
-      const hourlyData = data.list.filter(item => {
-        const date = new Date(item.dt * 1000);
-        return date.getDate() === currentDate;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        this.temperatureData = this.extractTemperatureData(data);
+        this.city = data.city.name;
+        this.createChart();
+        this.isLoading = false;
+      } catch (error) {
+        console.error('Error fetching temperature data:', error);
+      }
+    },
+    getCurrentPosition() {
+      return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
       });
-
-      return hourlyData.map(item => {
+    },
+    extractTemperatureData(data) {
+      const hourlyData = data.list.map(item => {
         const date = new Date(item.dt * 1000);
         const hour = date.getHours();
-        const temperature = kelvinToCelsius(item.main.temp);
-        const temperatureChangeIcon = getTemperatureChangeIcon(item.main.temp);
+        const temperature = this.kelvinToCelsius(item.main.temp);
+        const temperatureChangeIcon = this.getTemperatureChangeIcon(item.main.temp);
         return { hour, temperature, temperatureChangeIcon };
       });
-    };
 
-    const kelvinToCelsius = kelvin => {
+      return hourlyData;
+    },
+    kelvinToCelsius(kelvin) {
       return (kelvin - 273.15).toFixed(1);
-    };
-
-    const getTemperatureChangeIcon = temperature => {
-      const previousTemperature = temperatureData.value[temperatureData.value.length - 1]?.temperature;
+    },
+    getTemperatureChangeIcon(temperature) {
+      const previousTemperature = this.temperatureData[this.temperatureData.length - 1]?.temperature;
       if (previousTemperature) {
         return temperature > previousTemperature ? mdiArrowUp : mdiArrowDown;
       }
       return null;
-    };
+    },
+    createChart() {
+      const ctx = this.$refs.chartCanvas.getContext('2d');
 
-    const createChart = () => {
-      const ctx = chartCanvas.value.getContext('2d');
-
-      const labels = temperatureData.value.map(data => `${data.hour}`);
-      const values = temperatureData.value.map(data => data.temperature);
+      const labels = this.temperatureData.map(data => `${data.hour}`);
+      const values = this.temperatureData.map(data => data.temperature);
 
       new Chart(ctx, {
-        type: 'line',
+        type: 'bar',
         data: {
           labels: labels,
           datasets: [
             {
-              label: `Температура (${city.value})`,
+              label: `Температура (${this.city})`,
               data: values,
               backgroundColor: '#2E5FD9',
               borderColor: '#0A223E',
@@ -110,21 +103,7 @@ export default {
           },
         },
       });
-    };
-    onMounted(() => {
-      setTimeout(() => {
-        isLoading.value = false;
-      }, 2000);
-    });
-
-    onMounted(fetchTemperatureData);
-
-    return {
-      chartCanvas,
-      temperatureData,
-      isLoading,
-      path,
-    };
+    },
   },
 };
 </script>
