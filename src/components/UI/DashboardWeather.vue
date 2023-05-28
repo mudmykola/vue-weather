@@ -1,21 +1,26 @@
 <template>
-  <div class="dashboard-weather__cards">
-    <div  v-for="cityWeather in weatherData" :key="cityWeather.id" class="dashboard-weather__cards--box">
-      <h3>{{ cityWeather.name }}</h3>
-      <div class="dashboard-weather__cards--info">
-        <div>
-          <p>Температура: {{ cityWeather.main.temp }}°C</p>
-          <p>Опис: {{ cityWeather.weather[0].description }}</p>
-        </div>
-
-        <img :src="getWeatherIconUrl(cityWeather.weather[0].icon)" :alt="getWeatherDescription(cityWeather.weather[0].id)" />
-      </div>
-
-      <p>Вітер: {{ cityWeather.wind.speed }} м/с</p>
-      <p>Оновлено: {{ formatTimestamp(cityWeather.dt) }}</p>
-      <button @click="addToFavorites(cityWeather)">Додати в улюблене</button>
+  <div>
+    <div class="dashboard-weather__buttons">
+      <button @click="fetchCurrentWeather">{{
+          weatherForDay
+        }}</button>
+      <button @click="fetchFiveDayWeather">Погода на 5 днів</button>
     </div>
 
+    <div class="dashboard-weather__cards">
+      <div v-for="cityWeather in weatherData" :key="cityWeather.id" class="dashboard-weather__cards--box">
+        <h3>{{ cityWeather.name }}</h3>
+        <div class="dashboard-weather__cards--info">
+          <div>
+            <p>{{ windLabel }}: {{ cityWeather.wind.speed }} м/с</p>
+            <p>{{ descriptionLabel }}: {{ cityWeather.weather[0].description }}</p>
+          </div>
+          <img :src="getWeatherIconUrl(cityWeather.weather[0].icon)" :alt="getWeatherDescription(cityWeather.weather[0].id)" />
+        </div>
+        <p>{{ updatedLabel }}: {{ formatTimestamp(cityWeather.dt) }}</p>
+        <button @click="addToFavorites(cityWeather)">Додати в улюблене</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -24,26 +29,53 @@ import axios from 'axios';
 
 export default {
   name: 'DashboardWeather',
+  props: {
+    windLabel: {
+      type: String,
+      default: 'Вітер',
+    },
+    descriptionLabel: {
+      type: String,
+      default: 'Опис',
+    },
+    updatedLabel: {
+      type: String,
+      default: 'Оновлено',
+    },
+    weatherForDay: {
+      type: String,
+      default: 'Погода на сьогодні',
+    },
+  },
   data() {
     return {
       weatherData: [],
       favoriteWeather: [],
-
     };
   },
-  mounted() {
-    this.fetchWeatherData();
-  },
   methods: {
-    async fetchWeatherData() {
+    async fetchCurrentWeather() {
       try {
         const apiKey = '4904ff7c9fa86ba4a1bcf9b9e92cc3f3';
-        const cities = ['Kyiv', 'Lviv', 'Odessa'];
-        const requests = cities.map(city =>
-            axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city},ua&appid=${apiKey}&units=metric&lang=ua`)
+        const position = await this.getCurrentPosition();
+        const { latitude, longitude } = position.coords;
+        const response = await axios.get(
+            `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric&lang=ua`
         );
-        const responses = await Promise.all(requests);
-        this.weatherData = responses.map(response => response.data);
+        this.weatherData = [response.data];
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async fetchFiveDayWeather() {
+      try {
+        const apiKey = '4904ff7c9fa86ba4a1bcf9b9e92cc3f3';
+        const position = await this.getCurrentPosition();
+        const { latitude, longitude } = position.coords;
+        const response = await axios.get(
+            `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric&lang=ua`
+        );
+        this.weatherData = response.data.list.slice(0, 6);
       } catch (error) {
         console.log(error);
       }
@@ -51,8 +83,11 @@ export default {
     addToFavorites(cityWeather) {
       this.favoriteWeather.push(cityWeather);
     },
-
-
+    getCurrentPosition() {
+      return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+      });
+    },
     formatTimestamp(timestamp) {
       const date = new Date(timestamp * 1000);
       const hours = date.getHours();
@@ -61,27 +96,35 @@ export default {
       return `${hours}:${minutes}:${seconds}`;
     },
     getWeatherDescription(weatherId) {
-
       const descriptions = {
         200: 'Гроза з невеликим дощем',
         201: 'Гроза з дощем',
         202: 'Гроза з сильним дощем',
-
       };
 
       return descriptions[weatherId] || 'Невідома погода';
     },
     getWeatherIconUrl(iconCode) {
-      return `https://openweathermap.org/img/w/${iconCode}.png`;
+      return `https://openweathermap.org/img/wn/${iconCode}.png`;
     },
   },
 };
 </script>
 
+
+
+
+
+
+
+
 <style lang="scss" scoped>
 @use "src/styles/variables" as var;
 .dashboard-weather__cards{
-  margin-top: 200px;
+  width: 90%;
+  justify-content: center;
+  margin: 0 auto;
+  padding-top: 50px;
   display: grid;
   grid-template-columns: repeat(3,1fr);
   gap: 10px;

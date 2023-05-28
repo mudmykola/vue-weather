@@ -10,7 +10,7 @@
 
       <div class="dashboard-country__time">
         <h2>{{ currentTime }}</h2>
-     </div>
+      </div>
     </div>
   </div>
 </template>
@@ -72,7 +72,6 @@ export default {
     getCurrentTime(country) {
       this.currentTime = new Date().toLocaleString('en-US', {
         timeZone: 'Europe/Kiev',
-
       });
     },
     startClock() {

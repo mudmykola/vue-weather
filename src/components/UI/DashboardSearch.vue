@@ -6,83 +6,99 @@
         <li v-for="suggestion in suggestions" :key="suggestion.id" @click="selectSuggestion(suggestion)">{{ suggestion.name }}</li>
       </ul>
     </div>
-
-    <div class="dashboard-search__weather" v-for="(weatherData, index) in weatherList" :key="index">
-      <ul class="dashboard-search__weather--list">
-        <li class="dashboard-search__weather--item">
-          <h2>{{ weatherData.name }}</h2>
-          <p>{{ weatherData.weather[0].description }}</p>
-          <p>Температура: {{ weatherData.main.temp }}°C</p>
-          <p>Вітер: {{ weatherData.wind.speed }} м/с</p>
-          <button @click="removeWeather(index)">Видалити</button>
-        </li>
-
-      </ul>
-
-    </div>
   </div>
 </template>
 
 <script>
+import { ref, watch } from 'vue';
 import axios from 'axios';
 
 export default {
   name: 'DashboardSearch',
-  data() {
-    return {
-      city: '',
-      weatherList: [],
-      suggestions: [],
-    };
+  props: {
+    selectedCity: {
+      type: Object,
+      default: null,
+    },
   },
-  methods: {
-    async searchCity() {
+  setup(props, { emit }) {
+    const city = ref('');
+    const suggestions = ref([]);
+
+    const searchCity = async () => {
       try {
         const apiKey = '4904ff7c9fa86ba4a1bcf9b9e92cc3f3';
         const response = await axios.get(
-            `https://api.openweathermap.org/data/2.5/find?q=${this.city}&appid=${apiKey}&units=metric`
+            `https://api.openweathermap.org/data/2.5/find?q=${city.value}&appid=${apiKey}&units=metric`
         );
-        this.suggestions = response.data.list;
+        suggestions.value = response.data.list;
       } catch (error) {
         console.log(error);
       }
-    },
-    async selectSuggestion(suggestion) {
+    };
+
+    const selectSuggestion = async (suggestion) => {
       try {
         const apiKey = '4904ff7c9fa86ba4a1bcf9b9e92cc3f3';
         const response = await axios.get(
-            `https://api.openweathermap.org/data/2.5/weather?id=${suggestion.id}&appid=${apiKey}&units=metric`
+            `https://api.openweathermap.org/data/2.5/weather?id=${suggestion.id}&appid=${apiKey}&units=metric&lang=ua`
         );
-        this.weatherList.push(response.data);
-        this.city = '';
-        this.suggestions = [];
+        emit('city-selected', response.data);
+        city.value = '';
+        suggestions.value = [];
       } catch (error) {
         console.log(error);
       }
-    },
-    removeWeather(index) {
-      this.weatherList.splice(index, 1);
-    },
+    };
+
+    watch(
+        () => props.selectedCity,
+        (newCity) => {
+          if (newCity) {
+            city.value = newCity.name;
+          }
+        }
+    );
+
+    return {
+      city,
+      suggestions,
+      searchCity,
+      selectSuggestion,
+    };
   },
 };
 </script>
 
 <style lang="scss" scoped>
 @use "src/styles/variables" as var;
-.dashboard-search{
-
-  input{
+.dashboard-search {
+  input {
     background: var.$c104;
     border: none;
   }
-  ul{
-    li{
+
+  ul {
+    li {
       cursor: pointer;
     }
   }
+
+
   &__box{
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    position: relative;
+    ul{
+      position: absolute;
+      bottom: -35px;
+      max-width: 100px;
+      li{
+
+      }
+
+
+    }
     button{
       border: none;
       font-size: 12px;
