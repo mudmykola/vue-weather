@@ -4,45 +4,80 @@
         addWeatherText
       }}
     </button>
+    <div class="dashboard-weather__box">
+      <div v-for="(weather, index) in weatherBlocks" :key="index" class="dashboard-weather__card">
 
-    <div v-for="(weather, index) in weatherBlocks" :key="index" class="dashboard-weather__card">
-      <h3>{{
-          weather.city
-        }}</h3>
-      <p>Температура: {{
-          Math.round(weather.temperature)
-        }} °C</p>
-      <p>{{
-          weather.description
-        }}</p>
-      <p v-if="isMorning(weather.time)">Температура вранці: {{
-          Math.round(weather.temperatureMorning)
-        }} °C</p>
-      <p v-else>Температура в обід: {{
-          Math.round(weather.temperatureDay)
-        }} °C</p>
-      <img :src="weather.icon" :alt="weather.description"/>
-      <button @click="deleteWeatherBlock(index)">Видалити</button>
+        <div class="dashboard-weather__card--text">
+          <h3>{{
+              weather.city
+            }}</h3>
+          <p>Температура: {{
+              Math.round(weather.temperature)
+            }} °C</p>
+          <span>{{
+              weather.description
+            }}</span>
+          <p v-if="isMorning(weather.time)">Температура вранці: {{
+              Math.round(weather.temperatureMorning)
+            }} °C</p>
+          <p v-else>Температура в обід: {{
+              Math.round(weather.temperatureDay)
+            }} °C</p>
+        </div>
+
+
+        <button class="dashboard-weather__card--close" @click="deleteWeatherBlock(index)">
+          <svg-icon type="mdi" :path="path"></svg-icon>
+        </button>
+        <button class="dashboard-weather__card--favorite" @click="addFavorite(index)">
+          <svg-icon type="mdi" :path="mdiHeartOutline"></svg-icon>
+        </button>
+
+      </div>
+
     </div>
 
     <div v-if="showDeletePopup" class="dashboard-weather__delete">
       <p>Ви впевнені, що хочете видалити блок погоди?</p>
-      <button @click="confirmDelete">Так</button>
-      <button @click="cancelDelete">Скасувати</button>
+      <button @click="confirmDelete">{{
+          confirmDeleteText
+        }}
+      </button>
+      <button @click="cancelDelete">{{
+          cancelDeleteText
+        }}
+      </button>
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import SvgIcon from '@jamescoyle/vue-icon';
+import {mdiClose} from '@mdi/js';
+import { mdiHeartOutline } from '@mdi/js';
+
 
 export default {
-  name: 'WeatherCardList',
+  name: 'DashboardWeather',
+  components: {
+    SvgIcon,
+
+  },
   props: {
     addWeatherText: {
       type: String,
       default: 'Додати блок погоди',
     },
+    confirmDeleteText: {
+      type: String,
+      default: 'Так',
+    },
+    cancelDeleteText: {
+      type: String,
+      default: 'Скасувати',
+    },
+
   },
   data() {
     return {
@@ -50,7 +85,13 @@ export default {
       showDeletePopup: false,
       deleteIndex: null,
       apiKey: '4904ff7c9fa86ba4a1bcf9b9e92cc3f3',
+      path: mdiClose,
+      mdiHeartOutline:mdiHeartOutline,
+
     };
+  },
+  mounted() {
+    this.loadWeatherBlocks();
   },
   methods: {
     async addWeatherBlock() {
@@ -78,9 +119,10 @@ export default {
           temperatureDay: Math.round(temperatureDay),
           temperatureEvening: Math.round(temperatureEvening),
           time: new Date().getHours(),
-          icon: `https://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`,
+
         };
         this.weatherBlocks.push(newWeatherBlock);
+        this.saveWeatherBlocks();
       } catch (error) {
         console.log(error);
       }
@@ -92,6 +134,7 @@ export default {
     confirmDelete() {
       this.weatherBlocks.splice(this.deleteIndex, 1);
       this.closeDeletePopup();
+      this.saveWeatherBlocks();
     },
     cancelDelete() {
       this.closeDeletePopup();
@@ -103,41 +146,108 @@ export default {
     isMorning(time) {
       return time >= 6 && time < 12;
     },
+    saveWeatherBlocks() {
+      localStorage.setItem('weatherBlocks', JSON.stringify(this.weatherBlocks));
+    },
+    loadWeatherBlocks() {
+      const savedWeatherBlocks = localStorage.getItem('weatherBlocks');
+      if (savedWeatherBlocks) {
+        this.weatherBlocks = JSON.parse(savedWeatherBlocks);
+      }
+    },
   },
 };
 </script>
 
 <style lang="scss">
 @use "src/styles/variables" as var;
+
 .dashboard-weather {
   position: relative;
   padding-top: 50px;
 
-&__btn{
-  position: absolute;
-  top: 0;
-  right: 0;
-  border: none;
-  padding: 10px;
-  border-radius: 5px;
-  background: var.$c102;
-  color: var.$default;
-  font-weight: var.$font-b;
-  @extend %dtrans;
-  &:hover{
-    background: var.$c103;
-    @extend %htrans;
+  h3 {
+    font-size: 22px;
+    line-height: 30px;
+    font-weight: var.$font-b;
+    color: var.$c103;
   }
-}
+
+  p {
+    font-size: 15px;
+    line-height: 20px;
+    font-weight: var.$font-m;
+    color: var.$c101;
+  }
+
+  span {
+    font-size: 15px;
+    line-height: 20px;
+    font-weight: var.$font-m;
+    color: var.$c101;
+    text-transform: capitalize;
+  }
+
+  &__btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    background: var.$c102;
+    color: var.$default;
+    font-weight: var.$font-b;
+    @extend %dtrans;
+
+    &:hover {
+      background: var.$c103;
+      @extend %htrans;
+    }
+  }
+
+  &__box {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 30px;
+    justify-items: center;
+  }
+
   &__card {
+
+    position: relative;
+    display: flex;
+    width: 250px;
     padding: 15px;
     margin-bottom: 10px;
     background-color: #f2f2f2;
     border-radius: 5px;
+    cursor: pointer;
+
+
+    &--close {
+      position: absolute;
+      right: 2%;
+      top: 4%;
+      border: none;
+      background: transparent;
+    }
+    &--favorite{
+      position: absolute;
+      right: 2%;
+      top: 25%;
+      border: none;
+      background: transparent;
+    }
   }
 
   &__delete {
+    width: 300px;
+
     position: fixed;
+    display: grid;
+    gap: 10px;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -145,8 +255,28 @@ export default {
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    @extend %form-ef;
+
+    p {
+      margin-bottom: 10px;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    button {
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      background: var.$c102;
+      color: var.$default;
+      font-weight: var.$font-b;
+      @extend %dtrans;
+
+      &:hover {
+        background: var.$c103;
+        @extend %htrans;
+      }
+    }
   }
 }
-
-
 </style>

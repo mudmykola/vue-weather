@@ -1,6 +1,8 @@
 <template>
   <div class="dashboard-country">
-    <div class="dashboard-country__loading" v-if="loading">Завантаження...</div>
+    <div v-if="isLoading" class="dashboard-country__loader">
+      <svg-icon class="dashboard-country__icons spinner" type="mdi" :path="path"></svg-icon>
+    </div>
     <div class="dashboard-country__box" v-else>
       <div class="dashboard-country__city">
         <h2>{{ country }}</h2>
@@ -16,11 +18,17 @@
 </template>
 
 <script>
+import {mdiReload} from "@mdi/js";
+import SvgIcon from '@jamescoyle/vue-icon';
 export default {
   name: 'DashboardCountry',
+  components: {
+    SvgIcon
+  },
   data() {
     return {
-      loading: true,
+      isLoading: true,
+      path: mdiReload,
       country: '',
       city: '',
       ipAddress: '',
@@ -43,7 +51,7 @@ export default {
         this.city = city;
         this.ipAddress = ipAddress;
         this.getCurrentTime(country);
-        this.loading = false;
+        this.isLoading = false;
       } catch (error) {
         console.log(error);
         this.loading = false;
@@ -92,6 +100,15 @@ export default {
 <style lang="scss">
 @use "src/styles/variables" as var;
 .dashboard-country{
+  &__loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+  }
+  &__icons{
+    color: var.$default;
+  }
   &__box{
     display: flex;
     align-items: center;
@@ -122,6 +139,17 @@ export default {
   &__time{
     color: var.$default;
     font-weight: var.$font-m;
+  }
+}
+.spinner {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style>

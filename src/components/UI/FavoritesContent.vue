@@ -4,14 +4,13 @@
       <svg-icon class="favorites-content__icons spinner" type="mdi" :path="path"></svg-icon>
     </div>
     <div class="favorites-content__box" v-else>
-      <HeaderAside/>
-      <DashboardInfo/>
+      <HeaderAside />
+      <DashboardInfo />
     </div>
   </div>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
 import HeaderAside from "@/components/UI/HeaderAside.vue";
 import DashboardInfo from "@/components/UI/DashboardInfo.vue";
 import SvgIcon from '@jamescoyle/vue-icon';
@@ -19,20 +18,30 @@ import { mdiReload } from '@mdi/js';
 
 export default {
   components: { DashboardInfo, HeaderAside, SvgIcon },
-  setup() {
-    const isLoading = ref(true);
-    const path = mdiReload;
 
-    onMounted(() => {
-      setTimeout(() => {
-        isLoading.value = false;
-      }, 2000);
-    });
-
+  data() {
     return {
-      isLoading,
-      path,
+      isLoading: true,
+      path: mdiReload,
     };
+  },
+  mounted() {
+    this.delay(2000).then(() => {
+      this.isLoading = false;
+    });
+  },
+  methods: {
+    delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    },
+    addFavorite(weatherBlock) {
+
+    },
+    saveFavoritesToLocalStorage() {
+
+    },
+
+
   },
 };
 </script>

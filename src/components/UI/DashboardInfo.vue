@@ -14,8 +14,8 @@ export default {
   components: {
     DashboardWeatherDay,
     DashboardCountry,
-
   },
+
 
 };
 </script>

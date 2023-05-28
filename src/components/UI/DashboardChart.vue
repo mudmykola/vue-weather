@@ -8,7 +8,6 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
 import Chart from 'chart.js/auto';
 import { mdiArrowUp, mdiArrowDown } from '@mdi/js';
 import SvgIcon from '@jamescoyle/vue-icon';

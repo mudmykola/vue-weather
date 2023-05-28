@@ -34,7 +34,7 @@ export default {
     });
 
     const handleScroll = () => {
-      // Handle scroll event logic here
+
     };
 
     return {

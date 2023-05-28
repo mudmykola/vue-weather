@@ -1,7 +1,7 @@
 <template>
   <div class="favorites">
     <div >
-      <FavoritesContent/>
+      <FavoritesContent :favorites="favorites"/>
     </div>
 
   </div>
@@ -12,6 +12,12 @@ import FavoritesContent from "@/components/UI/FavoritesContent.vue";
 export default {
   name: "Favorites",
   components: {FavoritesContent},
+  props: {
+    favorites: {
+      type: Array,
+      default: () => []
+    }
+  },
 }
 </script>
 
