@@ -11,16 +11,18 @@
           <h3>{{
               weather.city
             }}</h3>
-          <p>Температура: {{
+          <p>{{temperatureText}} {{
               Math.round(weather.temperature)
             }} °C</p>
           <span>{{
               weather.description
             }}</span>
-          <p v-if="isMorning(weather.time)">Температура вранці: {{
+          <p v-if="isMorning(weather.time)">{{
+              temperatureMorningText
+            }} {{
               Math.round(weather.temperatureMorning)
             }} °C</p>
-          <p v-else>Температура в обід: {{
+          <p v-else>{{temperatureDayText}} {{
               Math.round(weather.temperatureDay)
             }} °C</p>
         </div>
@@ -38,7 +40,7 @@
     </div>
 
     <div v-if="showDeletePopup" class="dashboard-weather__delete">
-      <p>Ви впевнені, що хочете видалити блок погоди?</p>
+      <p>{{showDeletePopupText}}</p>
       <button @click="confirmDelete">{{
           confirmDeleteText
         }}
@@ -69,6 +71,18 @@ export default {
       type: String,
       default: 'Додати блок погоди',
     },
+    temperatureText:{
+      type: String,
+      default: 'Температура: ',
+    },
+    temperatureMorningText:{
+      type: String,
+      default: 'Температура вранці: ',
+    },
+    temperatureDayText: {
+      type: String,
+      default: 'Температура в обід:',
+    },
     confirmDeleteText: {
       type: String,
       default: 'Так',
@@ -76,6 +90,10 @@ export default {
     cancelDeleteText: {
       type: String,
       default: 'Скасувати',
+    },
+    showDeletePopupText: {
+      type: String,
+      default: 'Ви впевнені, що хочете видалити блок погоди?',
     },
 
   },
@@ -155,6 +173,7 @@ export default {
         this.weatherBlocks = JSON.parse(savedWeatherBlocks);
       }
     },
+
   },
 };
 </script>

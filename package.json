@@ -16,6 +16,7 @@
     "lodash.debounce": "^4.0.8",
     "pinia": "^2.0.36",
     "sass": "^1.62.1",
+    "vite-plugin-env-compatible": "^1.1.1",
     "vue": "^3.3.2",
     "vue-router": "^4.2.0"
   },

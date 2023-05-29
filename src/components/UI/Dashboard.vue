@@ -5,7 +5,7 @@
         <DashboardDate/>
         <DashboardSearch/>
       </div>
-      <div class="dashboard-weather" ref="dashboardWeather">
+      <div class="dashboard-weather" >
         <DashboardWeather />
         <DashboardChart/>
       </div>
@@ -14,7 +14,6 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
 import DashboardDate from "@/components/UI/DashboardDate.vue";
 import DashboardSearch from "@/components/UI/DashboardSearch.vue";
 import DashboardWeather from "@/components/UI/DashboardWeather.vue";
@@ -22,35 +21,19 @@ import DashboardChart from "@/components/UI/DashboardChart.vue";
 
 export default {
   name: "Dashboard",
-  components: {DashboardChart, DashboardWeather, DashboardDate, DashboardSearch},
-  setup() {
-    const dashboardWeatherRef = ref(null);
+  components: { DashboardChart, DashboardWeather, DashboardDate, DashboardSearch },
 
-    onMounted(() => {
-      const container = dashboardWeatherRef.value;
-      if (container) {
-        container.addEventListener('scroll', handleScroll);
-      }
-    });
-
-    const handleScroll = () => {
-
-    };
-
-    return {
-      dashboardWeatherRef
-    };
-  },
-}
+  }
 </script>
 
 <style lang="scss" scoped>
 @use "src/styles/variables" as var;
-.dashboard{
+
+.dashboard {
   position: relative;
   padding: 20px;
 
-  &-box{
+  &-box {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -58,7 +41,8 @@ export default {
 
   &-weather {
     overflow-y: auto;
-    max-height: 600px; /* Adjust the max height as needed */
+    max-height: 600px;
+    transition: opacity 0.5s ease;
   }
 }
 </style>
