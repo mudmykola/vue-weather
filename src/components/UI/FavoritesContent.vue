@@ -5,7 +5,7 @@
     </div>
     <div class="favorites-content__box" v-else>
       <HeaderAside />
-      <FavoritesList/>
+      <FavoritesList />
       <DashboardInfo class="dashboard-info"/>
     </div>
   </div>
@@ -36,8 +36,6 @@ export default {
     delay(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     },
-
-
   },
 };
 </script>

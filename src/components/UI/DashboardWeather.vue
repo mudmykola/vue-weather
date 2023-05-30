@@ -1,81 +1,94 @@
 <template>
   <div class="dashboard-weather">
-    <button class="dashboard-weather__btn" @click="addWeatherBlock">{{
-        addWeatherText
-      }}
+    <button class="dashboard-weather__btn" @click="addWeatherBlock">
+      {{ addWeatherText }}
     </button>
-    <div class="dashboard-weather__box">
+    <div class="dashboard-weather__tabs">
+      <button
+          class="dashboard-weather__tab"
+          :class="{ 'dashboard-weather__tab--active': activeTab === 'weather' }"
+          @click="setActiveTab('weather')"
+      >
+        Погода
+      </button>
+      <button
+          class="dashboard-weather__tab"
+          :class="{ 'dashboard-weather__tab--active': activeTab === 'favorites' }"
+          @click="setActiveTab('favorites')"
+      >
+        Обране
+      </button>
+    </div>
+
+    <div v-if="activeTab === 'weather'" class="dashboard-weather__box">
       <div v-for="(weather, index) in weatherBlocks" :key="index" class="dashboard-weather__card">
-
         <div class="dashboard-weather__card--text">
-          <h3>{{
-              weather.city
-            }}</h3>
-          <p>{{temperatureText}} {{
-              Math.round(weather.temperature)
-            }} °C</p>
-          <span>{{
-              weather.description
-            }}</span>
-          <p v-if="isMorning(weather.time)">{{
-              temperatureMorningText
-            }} {{
-              Math.round(weather.temperatureMorning)
-            }} °C</p>
-          <p v-else>{{temperatureDayText}} {{
-              Math.round(weather.temperatureDay)
-            }} °C</p>
+          <h3>{{ weather.city }}</h3>
+          <p>
+            {{ temperatureText }} {{ Math.round(weather.temperature) }} °C
+          </p>
+          <span>{{ weather.description }}</span>
+          <p v-if="isMorning(weather.time)">
+            {{ temperatureMorningText }} {{ Math.round(weather.temperatureMorning) }} °C
+          </p>
+          <p v-else>
+            {{ temperatureDayText }} {{ Math.round(weather.temperatureDay) }} °C
+          </p>
         </div>
-
-
         <button class="dashboard-weather__card--close" @click="deleteWeatherBlock(index)">
           <svg-icon type="mdi" :path="path"></svg-icon>
         </button>
         <button class="dashboard-weather__card--favorite" @click="addFavorite(index)">
           <svg-icon type="mdi" :path="mdiHeartOutline"></svg-icon>
         </button>
-
       </div>
+    </div>
 
+    <div v-else-if="activeTab === 'favorites'" class="dashboard-weather__box">
+      <div v-for="(favorite, index) in favoriteWeatherBlocks" :key="index" class="dashboard-weather__card">
+        <div class="dashboard-weather__card--text">
+          <h3>{{ favorite.city }}</h3>
+          <p>
+            {{ temperatureText }} {{ Math.round(favorite.temperature) }} °C
+          </p>
+          <span>{{ favorite.description }}</span>
+        </div>
+        <button class="dashboard-weather__card--close" @click="deleteFavorite(index)">
+          <svg-icon type="mdi" :path="path"></svg-icon>
+        </button>
+      </div>
     </div>
 
     <div v-if="showDeletePopup" class="dashboard-weather__delete">
-      <p>{{showDeletePopupText}}</p>
-      <button @click="confirmDelete">{{
-          confirmDeleteText
-        }}
-      </button>
-      <button @click="cancelDelete">{{
-          cancelDeleteText
-        }}
-      </button>
+      <p>{{ showDeletePopupText }}</p>
+      <button @click="confirmDelete">{{ confirmDeleteText }}</button>
+      <button @click="cancelDelete">{{ cancelDeleteText }}</button>
     </div>
   </div>
 </template>
 
+
 <script>
 import axios from 'axios';
 import SvgIcon from '@jamescoyle/vue-icon';
-import {mdiClose} from '@mdi/js';
+import { mdiClose } from '@mdi/js';
 import { mdiHeartOutline } from '@mdi/js';
-
 
 export default {
   name: 'DashboardWeather',
   components: {
     SvgIcon,
-
   },
   props: {
     addWeatherText: {
       type: String,
       default: 'Додати блок погоди',
     },
-    temperatureText:{
+    temperatureText: {
       type: String,
       default: 'Температура: ',
     },
-    temperatureMorningText:{
+    temperatureMorningText: {
       type: String,
       default: 'Температура вранці: ',
     },
@@ -95,7 +108,6 @@ export default {
       type: String,
       default: 'Ви впевнені, що хочете видалити блок погоди?',
     },
-
   },
   data() {
     return {
@@ -104,12 +116,14 @@ export default {
       deleteIndex: null,
       apiKey: '4904ff7c9fa86ba4a1bcf9b9e92cc3f3',
       path: mdiClose,
-      mdiHeartOutline:mdiHeartOutline,
-
+      mdiHeartOutline: mdiHeartOutline,
+      favoriteWeatherBlocks: [],
+      activeTab: 'weather',
     };
   },
   mounted() {
     this.loadWeatherBlocks();
+    this.loadFavoriteWeatherBlocks();
   },
   methods: {
     async addWeatherBlock() {
@@ -137,8 +151,8 @@ export default {
           temperatureDay: Math.round(temperatureDay),
           temperatureEvening: Math.round(temperatureEvening),
           time: new Date().getHours(),
-
         };
+
         this.weatherBlocks.push(newWeatherBlock);
         this.saveWeatherBlocks();
       } catch (error) {
@@ -173,10 +187,37 @@ export default {
         this.weatherBlocks = JSON.parse(savedWeatherBlocks);
       }
     },
+    addFavorite(index) {
+      const weatherBlock = this.weatherBlocks[index];
+      const favoriteWeather = {
+        city: weatherBlock.city,
+        temperature: weatherBlock.temperature,
+        description: weatherBlock.description,
+      };
 
+      this.favoriteWeatherBlocks.push(favoriteWeather);
+      this.saveFavoriteWeatherBlocks();
+    },
+    deleteFavorite(index) {
+      this.favoriteWeatherBlocks.splice(index, 1);
+      this.saveFavoriteWeatherBlocks();
+    },
+    saveFavoriteWeatherBlocks() {
+      localStorage.setItem('favoriteWeatherBlocks', JSON.stringify(this.favoriteWeatherBlocks));
+    },
+    loadFavoriteWeatherBlocks() {
+      const savedFavoriteWeatherBlocks = localStorage.getItem('favoriteWeatherBlocks');
+      if (savedFavoriteWeatherBlocks) {
+        this.favoriteWeatherBlocks = JSON.parse(savedFavoriteWeatherBlocks);
+      }
+    },
+    setActiveTab(tab) {
+      this.activeTab = tab;
+    },
   },
 };
 </script>
+
 
 <style lang="scss">
 @use "src/styles/variables" as var;
@@ -234,7 +275,6 @@ export default {
   }
 
   &__card {
-
     position: relative;
     display: flex;
     width: 250px;
@@ -244,7 +284,6 @@ export default {
     border-radius: 5px;
     cursor: pointer;
 
-
     &--close {
       position: absolute;
       right: 2%;
@@ -252,7 +291,8 @@ export default {
       border: none;
       background: transparent;
     }
-    &--favorite{
+
+    &--favorite {
       position: absolute;
       right: 2%;
       top: 25%;

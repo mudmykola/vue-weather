@@ -6,7 +6,7 @@
         <DashboardSearch/>
       </div>
       <div class="dashboard-weather" >
-        <DashboardWeather />
+        <DashboardWeather  />
         <DashboardChart/>
       </div>
     </div>
@@ -22,7 +22,6 @@ import DashboardChart from "@/components/UI/DashboardChart.vue";
 export default {
   name: "Dashboard",
   components: { DashboardChart, DashboardWeather, DashboardDate, DashboardSearch },
-
   }
 </script>
 
