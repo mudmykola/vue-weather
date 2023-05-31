@@ -76,4 +76,43 @@ export default {
   }
 }
 
+// 768
+
+@media (max-width: 768px) {
+  .container-848{
+    width: 280px;
+  }
+  .dashboard-date{
+    width: 250px;
+
+  }
+}
+
+// 600
+@media (max-width: 600px) {
+
+}
+
+// 480
+@media (max-width: 480px) {
+  .container-848{
+    width: 280px;
+  }
+  .dashboard-date{
+    width: 250px;
+
+  }
+}
+
+// 320
+@media (max-width: 320px) {
+  .container-848{
+    width: 280px;
+  }
+.dashboard-date{
+  width: 250px;
+
+}
+}
+
 </style>

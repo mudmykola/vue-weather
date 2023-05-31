@@ -119,4 +119,39 @@ export default {
     }
   }
 }
+
+// 768
+
+@media (max-width: 768px) {
+  .dashboard-search{
+    width: 200px;
+    margin-top: 20px;
+  }
+}
+
+// 600
+@media (max-width: 600px) {
+  .dashboard-search{
+    width: 200px;
+    margin-top: 20px;
+  }
+
+}
+
+// 480
+@media (max-width: 480px) {
+  .dashboard-search{
+    width: 200px;
+    margin-top: 20px;
+  }
+}
+
+// 320
+@media (max-width: 320px) {
+
+.dashboard-search{
+  width: 200px;
+  margin-top: 20px;
+}
+}
 </style>

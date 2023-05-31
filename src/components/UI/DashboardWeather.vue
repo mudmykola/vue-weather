@@ -1,7 +1,9 @@
 <template>
   <div class="dashboard-weather">
     <button class="dashboard-weather__btn" @click="addWeatherBlock">
-      {{ addWeatherText }}
+      {{
+        addWeatherText
+      }}
     </button>
     <div class="dashboard-weather__tabs">
       <button
@@ -9,30 +11,50 @@
           :class="{ 'dashboard-weather__tab--active': activeTab === 'weather' }"
           @click="setActiveTab('weather')"
       >
-        Погода
+        {{
+          tabWeatherText
+        }}
       </button>
       <button
           class="dashboard-weather__tab"
           :class="{ 'dashboard-weather__tab--active': activeTab === 'favorites' }"
           @click="setActiveTab('favorites')"
       >
-        Обране
+        {{
+          tabFavoriteText
+        }}
       </button>
     </div>
 
     <div v-if="activeTab === 'weather'" class="dashboard-weather__box">
       <div v-for="(weather, index) in weatherBlocks" :key="index" class="dashboard-weather__card">
         <div class="dashboard-weather__card--text">
-          <h3>{{ weather.city }}</h3>
+          <h3>{{
+              weather.city
+            }}</h3>
           <p>
-            {{ temperatureText }} {{ Math.round(weather.temperature) }} °C
+            {{
+              temperatureText
+            }} {{
+              Math.round(weather.temperature)
+            }} °C
           </p>
-          <span>{{ weather.description }}</span>
+          <span>{{
+              weather.description
+            }}</span>
           <p v-if="isMorning(weather.time)">
-            {{ temperatureMorningText }} {{ Math.round(weather.temperatureMorning) }} °C
+            {{
+              temperatureMorningText
+            }} {{
+              Math.round(weather.temperatureMorning)
+            }} °C
           </p>
           <p v-else>
-            {{ temperatureDayText }} {{ Math.round(weather.temperatureDay) }} °C
+            {{
+              temperatureDayText
+            }} {{
+              Math.round(weather.temperatureDay)
+            }} °C
           </p>
         </div>
         <button class="dashboard-weather__card--close" @click="deleteWeatherBlock(index)">
@@ -47,11 +69,19 @@
     <div v-else-if="activeTab === 'favorites'" class="dashboard-weather__box">
       <div v-for="(favorite, index) in favoriteWeatherBlocks" :key="index" class="dashboard-weather__card">
         <div class="dashboard-weather__card--text">
-          <h3>{{ favorite.city }}</h3>
+          <h3>{{
+              favorite.city
+            }}</h3>
           <p>
-            {{ temperatureText }} {{ Math.round(favorite.temperature) }} °C
+            {{
+              temperatureText
+            }} {{
+              Math.round(favorite.temperature)
+            }} °C
           </p>
-          <span>{{ favorite.description }}</span>
+          <span>{{
+              favorite.description
+            }}</span>
         </div>
         <button class="dashboard-weather__card--close" @click="deleteFavorite(index)">
           <svg-icon type="mdi" :path="path"></svg-icon>
@@ -60,19 +90,25 @@
     </div>
 
     <div v-if="showDeletePopup" class="dashboard-weather__delete">
-      <p>{{ showDeletePopupText }}</p>
-      <button @click="confirmDelete">{{ confirmDeleteText }}</button>
-      <button @click="cancelDelete">{{ cancelDeleteText }}</button>
+      <p>{{
+          showDeletePopupText
+        }}</p>
+      <button @click="confirmDelete">{{
+          confirmDeleteText
+        }}
+      </button>
+      <button @click="cancelDelete">{{
+          cancelDeleteText
+        }}
+      </button>
     </div>
   </div>
 </template>
-
-
 <script>
 import axios from 'axios';
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiClose } from '@mdi/js';
-import { mdiHeartOutline } from '@mdi/js';
+import {mdiClose} from '@mdi/js';
+import {mdiHeartOutline} from '@mdi/js';
 
 export default {
   name: 'DashboardWeather',
@@ -108,6 +144,14 @@ export default {
       type: String,
       default: 'Ви впевнені, що хочете видалити блок погоди?',
     },
+    tabWeatherText: {
+      type: String,
+      default: 'Погода',
+    },
+    tabFavoriteText: {
+      type: String,
+      default: 'Обране',
+    }
   },
   data() {
     return {
@@ -131,26 +175,24 @@ export default {
       if (!city) return;
 
       try {
-        const response = await axios.get(
-            `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${this.apiKey}&units=metric&lang=ua`
-        );
-        const weatherData = response.data;
-        const forecastResponse = await axios.get(
-            `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${this.apiKey}&units=metric&lang=ua`
-        );
+        const [weatherResponse, forecastResponse] = await Promise.all([
+          axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${this.apiKey}&units=metric&lang=uk`),
+          axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${this.apiKey}&units=metric&lang=uk`),
+        ]);
+
+        const weatherData = weatherResponse.data;
         const forecastData = forecastResponse.data;
 
         const temperatureDay = forecastData.list[2].main.temp;
-        const temperatureEvening = forecastData.list[4].main.temp;
+        const temperatureMorning = forecastData.list[0].main.temp;
 
         const newWeatherBlock = {
           city: weatherData.name,
           temperature: Math.round(weatherData.main.temp),
           description: weatherData.weather[0].description,
-          temperatureMorning: 0,
+          temperatureMorning: Math.round(temperatureMorning),
           temperatureDay: Math.round(temperatureDay),
-          temperatureEvening: Math.round(temperatureEvening),
-          time: new Date().getHours(),
+          time: new Date().getUTCHours(),
         };
 
         this.weatherBlocks.push(newWeatherBlock);
@@ -159,6 +201,7 @@ export default {
         console.log(error);
       }
     },
+
     deleteWeatherBlock(index) {
       this.showDeletePopup = true;
       this.deleteIndex = index;
@@ -266,6 +309,32 @@ export default {
     }
   }
 
+  &__tabs {
+    display: flex;
+    gap: 10px;
+  }
+
+  &__tab {
+
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid var.$c103;
+    background: transparent;
+    color: var.$c103;
+    font-weight: var.$font-b;
+    @extend %dtrans;
+
+    &--active {
+      background: var.$c103;
+      @extend %htrans;
+      color: var.$default;
+    }
+
+    &:hover {
+
+    }
+  }
+
   &__box {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -335,6 +404,97 @@ export default {
         background: var.$c103;
         @extend %htrans;
       }
+    }
+  }
+}
+
+// 1200
+
+@media (max-width: 1200px) {
+
+  .dashboard-weather {
+
+    &__box {
+
+      grid-template-columns: repeat(2, 1fr);
+      width: 550px;
+      margin: 0 auto;
+      margin-top: 30px;
+    }
+  }
+}
+
+// 768
+
+@media (max-width: 768px) {
+  .container-848 {
+    width: 100%;
+  }
+  .dashboard-weather {
+    &__box {
+
+      grid-template-columns: repeat(2, 1fr);
+      width: 550px;
+      margin: 0 auto;
+      margin-top: 30px;
+    }
+  }
+}
+
+// 600
+@media (max-width: 600px) {
+  .container-848 {
+    width: 100%;
+  }
+  .dashboard-weather {
+    &__box {
+      grid-template-columns: repeat(2, 1fr);
+      width: 250px;
+
+      margin-top: 30px;
+    }
+  }
+}
+
+// 480
+@media (max-width: 480px) {
+  .container-848 {
+    width: 100%;
+
+  }
+  .dashboard-weather {
+
+    &__tabs {
+      justify-content: flex-end;
+    }
+
+    &__box {
+      grid-template-columns: repeat(1, 1fr);
+      width: 250px;
+      margin: 0 auto;
+      margin-top: 30px;
+    }
+  }
+}
+
+// 320
+@media (max-width: 320px) {
+  .container-848 {
+    width: 250px;
+
+  }
+  .dashboard-weather {
+    &__btn {
+
+    }
+
+    &__tabs {
+      justify-content: flex-end;
+    }
+
+    &__box {
+      grid-template-columns: repeat(1, 1fr);
+      width: 250px;
     }
   }
 }

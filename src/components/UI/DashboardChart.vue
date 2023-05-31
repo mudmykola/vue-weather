@@ -134,4 +134,53 @@ export default {
     transform: rotate(360deg);
   }
 }
+
+// 768
+
+@media (max-width: 768px) {
+  .container-848{
+    width: 100%;
+
+  }
+  .dashboard-chart{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+// 600
+@media (max-width: 600px) {
+  .container-848{
+    width: 100%;
+
+  }
+  .dashboard-chart{
+    width: 100%;
+  }
+}
+
+// 480
+@media (max-width: 480px) {
+  .container-848{
+    width: 100%;
+
+  }
+  .dashboard-chart{
+    width: 100%;
+  }
+}
+
+// 320
+@media (max-width: 320px) {
+  .container-848{
+    width:400px;
+
+  }
+.dashboard-chart{
+canvas{
+  width: 100%;
+}
+}
+}
 </style>

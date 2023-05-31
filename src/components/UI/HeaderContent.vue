@@ -23,4 +23,33 @@ export default {
 .header-content{
   display: flex;
 }
+
+// 768
+
+@media (max-width: 768px) {
+  .header-content{
+    flex-direction: column;
+  }
+}
+
+// 600
+@media (max-width: 600px) {
+  .header-content{
+    flex-direction: column;
+  }
+}
+
+// 480
+@media (max-width: 480px) {
+  .header-content{
+    flex-direction: column;
+  }
+}
+
+// 320
+@media (max-width: 320px) {
+.header-content{
+  flex-direction: column;
+}
+}
 </style>

@@ -90,24 +90,44 @@ export default {
 
 }
 
+// 1200
+
+@media (max-width: 1200px) {
+  .header-aside__content{
+    height: 100vh;
+    width: 200px;
+  }
+}
+
 // 768
 
-@media (max-width: 1920px) {
-
+@media (max-width: 768px) {
+  .header-aside__content{
+    height: 150px;
+    width: 100%;
+  }
 }
 
 // 600
 @media (max-width: 600px) {
-
+  .header-aside__content{
+    height: 150px;
+    width: 100%;
+  }
 }
 
 // 480
 @media (max-width: 480px) {
-
+  .header-aside__content{
+    height: 150px;
+    width: 100%;
+  }
 }
 
 // 320
 @media (max-width: 320px) {
-
+.header-aside__content{
+  height: 150px;
+}
 }
 </style>

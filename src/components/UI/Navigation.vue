@@ -35,12 +35,7 @@ export default {
           path: mdiHomeOutline,
           active: false,
         },
-        {
-          title: 'Улюблене',
-          url: 'favorite',
-          path: mdiHeartOutline,
-          active: false,
-        }
+
       ],
     };
   },
@@ -79,7 +74,34 @@ export default {
     margin-left: 10px;
     color: var.$c102;
     cursor: pointer;
+  }
+}
+// 768
 
+@media (max-width: 768px) {
+  .navigation{
+    margin-top: 20px;
+  }
+}
+
+// 600
+@media (max-width: 600px) {
+  .navigation{
+    margin-top: 20px;
+  }
+}
+
+// 480
+@media (max-width: 480px) {
+  .navigation{
+    margin-top: 20px;
+  }
+}
+
+// 320
+@media (max-width: 320px) {
+  .navigation{
+    margin-top: 20px;
   }
 }
 </style>
